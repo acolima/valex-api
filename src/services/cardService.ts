@@ -1,6 +1,8 @@
 import * as employeeRepository from "../repositories/employeeRepository.js"
 import * as cardRepository from "../repositories/cardRepository.js"
+import * as rechargeRepository from "../repositories/rechargeRepository.js"
 import * as error from "../utils/errorUtils.js"
+import * as cardVerification from "../utils/cardVerificationUtils.js"
 
 import { TransactionTypes } from "../repositories/cardRepository.js"
 import { faker } from "@faker-js/faker"
@@ -45,19 +47,32 @@ export async function createCard(employeeId: number, cardType: string){
 
 export async function activateCard(id: number, securityCode: string, password: string) {
   const card = await cardRepository.findById(id)
-  
-  if(!card) 
-    throw error.unregisteredCard()
-  if(card.expirationDate < dayjs().format('MM/YY'))
-    throw error.expiredCard()
-  if(card.password) 
-    throw error.activatedCard()
+
+  cardVerification.registeredCard(card)
+  cardVerification.expiredCard(card)
+  cardVerification.activatedCard(card)
+
   if(!bcrypt.compareSync(securityCode, card.securityCode))
     throw error.invalidCVV()
   
   password = bcrypt.hashSync(password, 10)
 
   await cardRepository.update(id, {...card, password})
+}
+
+export async function rechargeCard(id: number, amount: number) {
+  const card = await cardRepository.findById(id)
+  
+  cardVerification.registeredCard(card)
+  cardVerification.expiredCard(card)
+  cardVerification.deactivatedCard(card)
+
+  const recharge = {
+    cardId: Number(id),
+    amount
+  }
+
+  rechargeRepository.insert(recharge)
 }
 
 function formatName(name: string) {

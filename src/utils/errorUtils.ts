@@ -26,6 +26,10 @@ export function activatedCard(){
   return {status: 401, message: "Card is already active"}
 }
 
+export function deactivatedCard(){
+  return {status: 401, message: "Card is not active"}
+}
+
 export function invalidCVV(){
   return {status: 401, message: "Invalid security code"}
 }
