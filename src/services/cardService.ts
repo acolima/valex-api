@@ -37,7 +37,7 @@ export async function createCard(employeeId: number, cardType: string){
     expirationDate,
     password: null,
     isVirtual: false,
-    originalCardId: undefined,
+    originalCardId: null,
     isBlocked: false,
     type
   }
@@ -48,7 +48,7 @@ export async function createCard(employeeId: number, cardType: string){
 export async function activateCard(id: number, securityCode: string, password: string) {
   const card = await cardRepository.findById(id)
 
-  cardVerification.registeredCard(card)
+  cardVerification.unregisteredCard(card)
   cardVerification.expiredCard(card)
   cardVerification.activatedCard(card)
 
@@ -63,7 +63,7 @@ export async function activateCard(id: number, securityCode: string, password: s
 export async function rechargeCard(id: number, amount: number) {
   const card = await cardRepository.findById(id)
   
-  cardVerification.registeredCard(card)
+  cardVerification.unregisteredCard(card)
   cardVerification.expiredCard(card)
   cardVerification.deactivatedCard(card)
 
@@ -72,7 +72,7 @@ export async function rechargeCard(id: number, amount: number) {
     amount
   }
 
-  rechargeRepository.insert(recharge)
+  await rechargeRepository.insert(recharge)
 }
 
 function formatName(name: string) {

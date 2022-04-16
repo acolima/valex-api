@@ -2,7 +2,7 @@ import * as error from "../utils/errorUtils.js"
 import dayjs from "dayjs"
 import { Card } from "../repositories/cardRepository.js"
 
-export function registeredCard(card: Card){
+export function unregisteredCard(card: Card){
   if(!card) throw error.unregisteredCard()
 }
 

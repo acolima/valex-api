@@ -1,35 +1,47 @@
 export function invalidKey() {
-  return {status: 401, message: "Invalid API key"}
+  return { statusCode: 401, message: "Invalid API key" }
 }
 
 export function unregisteredEmployee(){
-  return {status: 404, message: "Employee not registered"}
+  return { statusCode: 404, message: "Employee not registered" }
 }
 
 export function cardNumberInUse(){
-  return {status: 409, message: "This number is already in use"}
+  return { statusCode: 409, message: "This number is already in use" }
 }
 
 export function duplicatedCardType(type: string){
-  return {status: 409, message: `This user already has a ${type} card`}
+  return { statusCode: 409, message: `This user already has a ${type} card` }
 }
 
 export function unregisteredCard(){
-  return {status: 404, message: "Card not registered"}
+  return { statusCode: 404, message: "Card not registered" }
 }
 
 export function expiredCard(){
-  return {status: 401, message: "Expired card"}
+  return { statusCode: 401, message: "Expired card" }
 }
 
 export function activatedCard(){
-  return {status: 401, message: "Card is already active"}
+  return { statusCode: 401, message: "Card is already active" }
 }
 
 export function deactivatedCard(){
-  return {status: 401, message: "Card is not active"}
+  return { statusCode: 401, message: "Card is not active" }
 }
 
 export function invalidCVV(){
-  return {status: 401, message: "Invalid security code"}
+  return { statusCode: 401, message: "Invalid security code" }
+}
+
+export function incorrectPassword(){
+  return { statusCode: 401, message: "Password is incorrect" }
+}
+
+export function unregisteredEstablishment(){
+  return { statusCode: 401, message: "Establishment is not registered" }
+}
+
+export function differentCardType(){
+  return { statusCode: 401, message: "Different card type" }
 }
