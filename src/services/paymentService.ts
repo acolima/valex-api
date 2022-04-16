@@ -1,6 +1,7 @@
 import * as businessRepository from "../repositories/businessRepository.js"
 import * as cardRepository from "../repositories/cardRepository.js"
 import * as paymentRepository from "../repositories/paymentRepository.js"
+import * as balanceService from "../services/balanceService.js"
 import * as cardVerification from "../utils/cardVerificationUtils.js"
 import * as error from "../utils/errorUtils.js"
 import bcrypt from "bcrypt"
@@ -9,7 +10,6 @@ export async function newPayment(
   cardId: number, password: string, businessId: number, amount: number
 ){
   const card = await cardRepository.findById(cardId)
-  console.log(card)
 
   cardVerification.unregisteredCard(card)
   cardVerification.expiredCard(card)
@@ -24,7 +24,8 @@ export async function newPayment(
   if(card.type !== establishment.type)
     throw error.differentCardType()
 
-  //TODO: check the card balance
+  const { balance } = await balanceService.getBalance(cardId)
+  if(balance <= amount) throw error.insuficientBalance()
 
   await paymentRepository.insert({cardId, businessId, amount})
 }

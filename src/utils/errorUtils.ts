@@ -45,3 +45,7 @@ export function unregisteredEstablishment(){
 export function differentCardType(){
   return { statusCode: 401, message: "Different card type" }
 }
+
+export function insuficientBalance(){
+  return { statusCode: 401, message: "Insuficient balance" }
+}

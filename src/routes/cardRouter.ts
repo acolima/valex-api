@@ -1,5 +1,6 @@
 import * as cardController from "../controllers/cardController.js"
 import * as paymentController from "../controllers/paymentController.js"
+import * as balanceController from "../controllers/balanceController.js"
 
 import * as cardSchemas from "../schemas/cardSchema.js"
 import * as rechargeSchemas from "../schemas/rechargeSchema.js"
@@ -32,6 +33,10 @@ cardRouter.post(
   "/cards/:id/payment",
   schemaValidation(paymentSchemas.payment),
   paymentController.newPayment
+)
+cardRouter.get(
+  "/cards/:id/balance",
+  balanceController.getBalance
 )
 
 export default cardRouter
