@@ -51,7 +51,7 @@ export function insuficientBalance(){
 }
 
 export function blockedCard() {
-  return { statusCode: 401, message: "This card is already blocked" }
+  return { statusCode: 401, message: "This card is blocked" }
 }
 
 export function unblockedCard() {

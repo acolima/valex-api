@@ -13,6 +13,7 @@ export async function newPayment(
   cardVerification.unregisteredCard(card)
   cardVerification.expiredCard(card)
   cardVerification.deactivatedCard(card)
+  cardVerification.blockedCard(card)
 
   cardVerification.checkPassword(card, password)
 
