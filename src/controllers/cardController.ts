@@ -28,3 +28,16 @@ export async function rechargeCard(req: Request, res: Response) {
 
   res.sendStatus(200)
 }
+
+export async function updateCardStatus(req: Request, res: Response){
+  const { id } = req.params
+  const { password } = req.body
+  
+  let blockCard: boolean = false
+  if(req.path === `/cards/${id}/block`)
+    blockCard = true
+
+  await cardService.updateCardStatus(Number(id), password, blockCard)
+
+  res.sendStatus(200)
+}

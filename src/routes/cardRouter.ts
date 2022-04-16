@@ -38,5 +38,13 @@ cardRouter.get(
   "/cards/:id/balance",
   balanceController.getBalance
 )
+cardRouter.put(
+  "/cards/:id/block",
+  cardController.updateCardStatus
+)
+cardRouter.put(
+  "/cards/:id/unblock",
+  cardController.updateCardStatus
+)
 
 export default cardRouter

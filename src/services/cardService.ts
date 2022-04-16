@@ -90,3 +90,17 @@ function formatName(name: string) {
 
   return cardName.toUpperCase()
 }
+
+export async function updateCardStatus(id: number, password: string, blockCard: boolean){
+  const card = await cardRepository.findById(id)
+
+  cardVerification.unregisteredCard(card)
+  cardVerification.expiredCard(card)
+  cardVerification.checkPassword(card, password)
+  
+  if(blockCard)
+    cardVerification.blockedCard(card)
+  else cardVerification.unblockedCard(card)
+
+  await cardRepository.update(id, blockCard ? {isBlocked: true} : {isBlocked: false})
+}

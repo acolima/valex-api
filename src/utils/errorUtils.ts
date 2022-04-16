@@ -49,3 +49,11 @@ export function differentCardType(){
 export function insuficientBalance(){
   return { statusCode: 401, message: "Insuficient balance" }
 }
+
+export function blockedCard() {
+  return { statusCode: 401, message: "This card is already blocked" }
+}
+
+export function unblockedCard() {
+  return { statusCode: 401, message: "This card is not blocked" }
+}
