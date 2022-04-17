@@ -4,9 +4,17 @@ import * as cardService from "../services/cardService.js"
 export async function createCard(req: Request, res: Response){
   const { employeeId, type } = req.body
   
-  const cvv = await cardService.createCard(employeeId, type)
+  const card = await cardService.createCard(employeeId, type)
 
-  res.status(201).send(cvv)
+  res.status(201).send(card)
+}
+
+export async function createVirtualCard(req: Request, res: Response) {
+  const { cardId, password } = req.body
+
+  const card = await cardService.createVirtualCard(cardId, password)
+
+  res.status(201).send(card)
 }
 
 export async function activateCard(req: Request, res: Response){

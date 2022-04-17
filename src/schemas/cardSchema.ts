@@ -15,3 +15,8 @@ export const activateCard = joi.object({
   securityCode: joi.string().length(3).required(),
   password: joi.string().length(4).regex(/^[0-9]{4}$/).required()
 })
+
+export const createVirtualCard = joi.object({
+  cardId: joi.number().required(),
+  password: joi.string().length(4).regex(/^[0-9]{4}$/).required()
+})

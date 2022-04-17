@@ -13,6 +13,11 @@ cardRouter.post(
   schemaValidation(cardSchemas.createCard), 
   cardController.createCard
 )
+cardRouter.post(
+  "/cards/create/virtual",
+  schemaValidation(cardSchemas.createVirtualCard),
+  cardController.createVirtualCard
+)
 cardRouter.put(
   "/cards/:id/activate", 
   schemaValidation(cardSchemas.activateCard), 

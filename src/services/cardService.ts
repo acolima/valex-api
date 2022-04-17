@@ -56,6 +56,48 @@ export async function createCard(employeeId: number, cardType: string){
   return {newCard}
 }
 
+export async function createVirtualCard(cardId: number, password: string) {
+  const card = await cardRepository.findById(cardId)
+  
+  cardVerification.unregisteredCard(card)
+  cardVerification.checkPassword(card, password)  
+
+  const number = faker.finance.creditCardNumber('mastercard')
+  
+  const cardNumber = await cardRepository.findByNumber(number)
+  if(cardNumber) throw error.cardNumberInUse()
+
+  const expirationDate = dayjs().add(5, 'year').format("MM/YY")
+
+  let securityCode = faker.finance.creditCardCVV()
+  const cvv = securityCode
+  securityCode = bcrypt.hashSync(securityCode, 10)
+
+  const cardData = {
+    employeeId: card.employeeId,
+    number,
+    cardholderName: card.cardholderName,
+    securityCode: securityCode,
+    expirationDate,
+    password: card.password,
+    isVirtual: true,
+    originalCardId: cardId,
+    isBlocked: false,
+    type: card.type
+  }
+
+  await cardRepository.insert(cardData)
+
+  const newCard = {
+    cardNumber: number,
+    cardholderName: card.cardholderName,
+    securityCode: cvv,
+    expirationDate
+  }
+
+  return {newCard}
+}
+
 export async function activateCard(id: number, securityCode: string, password: string) {
   const card = await cardRepository.findById(id)
 
