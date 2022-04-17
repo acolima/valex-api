@@ -10,3 +10,23 @@ export async function newPayment(req: Request, res: Response) {
 
   res.sendStatus(200)
 }
+
+export async function newOnlinePayment(req: Request, res: Response) {
+  const { cardNumber, 
+    cardHolderName, 
+    expirationDate, 
+    securityCode,
+    establishmentId, 
+    amount 
+  } = req.body
+
+  await paymentService.newOnlinePayment(cardNumber, 
+    cardHolderName, 
+    expirationDate, 
+    securityCode,
+    establishmentId, 
+    amount 
+  )
+
+  res.sendStatus(200)
+}

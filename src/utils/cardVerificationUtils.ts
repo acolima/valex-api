@@ -32,3 +32,8 @@ export function checkPassword(card: Card, password: string) {
   if(!bcrypt.compareSync(password, card.password)) 
     throw error.incorrectPassword()
 }
+
+export function checkSecurityCode(card: Card, securityCode: string){
+  if(!bcrypt.compareSync(securityCode, card.securityCode))
+  throw error.invalidSecurityCode()
+}

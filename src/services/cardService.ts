@@ -63,8 +63,7 @@ export async function activateCard(id: number, securityCode: string, password: s
   cardVerification.expiredCard(card)
   cardVerification.activatedCard(card)
 
-  if(!bcrypt.compareSync(securityCode, card.securityCode))
-    throw error.invalidCVV()
+  cardVerification.checkSecurityCode(card, securityCode)
   
   password = bcrypt.hashSync(password, 10)
 

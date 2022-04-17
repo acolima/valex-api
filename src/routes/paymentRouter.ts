@@ -6,6 +6,11 @@ import * as paymentController from "../controllers/paymentController.js"
 const paymentRouter = Router()
 
 paymentRouter.post(
+  "/payment/online",
+  schemaValidation(paymentSchemas.onlinePayment),
+  paymentController.newOnlinePayment
+)
+paymentRouter.post(
   "/payment/:id",
   schemaValidation(paymentSchemas.payment),
   paymentController.newPayment

@@ -30,7 +30,7 @@ export function deactivatedCard(){
   return { statusCode: 401, message: "Card is not active" }
 }
 
-export function invalidCVV(){
+export function invalidSecurityCode(){
   return { statusCode: 401, message: "Invalid security code" }
 }
 
