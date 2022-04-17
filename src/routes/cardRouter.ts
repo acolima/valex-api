@@ -1,10 +1,5 @@
 import * as cardController from "../controllers/cardController.js"
-import * as paymentController from "../controllers/paymentController.js"
-import * as balanceController from "../controllers/balanceController.js"
-
 import * as cardSchemas from "../schemas/cardSchema.js"
-import * as rechargeSchemas from "../schemas/rechargeSchema.js"
-import * as paymentSchemas from "../schemas/paymentSchema.js"
 
 import { Router } from "express"
 import apiKeyValidation from "../middlewares/apiKeyValidationMiddleware.js"
@@ -18,25 +13,14 @@ cardRouter.post(
   schemaValidation(cardSchemas.createCard), 
   cardController.createCard
 )
-cardRouter.post(
+cardRouter.put(
   "/cards/:id/activate", 
   schemaValidation(cardSchemas.activateCard), 
   cardController.activateCard
 )
-cardRouter.post(
-  "/cards/:id/recharge",
-  apiKeyValidation,
-  schemaValidation(rechargeSchemas.recharge), 
-  cardController.rechargeCard
-)
-cardRouter.post(
-  "/cards/:id/payment",
-  schemaValidation(paymentSchemas.payment),
-  paymentController.newPayment
-)
 cardRouter.get(
   "/cards/:id/balance",
-  balanceController.getBalance
+  cardController.getBalance
 )
 cardRouter.put(
   "/cards/:id/block",

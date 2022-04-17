@@ -1,5 +1,6 @@
 import * as employeeRepository from "../repositories/employeeRepository.js"
 import * as cardRepository from "../repositories/cardRepository.js"
+import * as paymentRepository from "../repositories/paymentRepository.js"
 import * as rechargeRepository from "../repositories/rechargeRepository.js"
 import * as error from "../utils/errorUtils.js"
 import * as cardVerification from "../utils/cardVerificationUtils.js"
@@ -45,7 +46,14 @@ export async function createCard(employeeId: number, cardType: string){
 
   await cardRepository.insert(cardData)
 
-  return {cvv}
+  const newCard = {
+    cardNumber: number,
+    cardholderName,
+    securityCode: cvv,
+    expirationDate
+  }
+
+  return {newCard}
 }
 
 export async function activateCard(id: number, securityCode: string, password: string) {
@@ -63,19 +71,39 @@ export async function activateCard(id: number, securityCode: string, password: s
   await cardRepository.update(id, {...card, password})
 }
 
-export async function rechargeCard(id: number, amount: number) {
+export async function updateCardStatus(id: number, password: string, blockCard: boolean){
   const card = await cardRepository.findById(id)
-  
+
   cardVerification.unregisteredCard(card)
   cardVerification.expiredCard(card)
+  cardVerification.checkPassword(card, password)
+  
+  if(blockCard)
+    cardVerification.blockedCard(card)
+  else cardVerification.unblockedCard(card)
+
+  await cardRepository.update(id, blockCard ? {isBlocked: true} : {isBlocked: false})
+}
+
+export async function getBalance(cardId: number) {
+  const card = await cardRepository.findById(cardId)
+  cardVerification.unregisteredCard(card)
   cardVerification.deactivatedCard(card)
 
-  const recharge = {
-    cardId: Number(id),
-    amount
-  }
+  let transactions = await paymentRepository.findByCardId(cardId)
+  let recharges = await rechargeRepository.findByCardId(cardId)
 
-  await rechargeRepository.insert(recharge)
+  const totalTransactions: number = getTotalAmount(transactions)
+  const totalRecharges: number = getTotalAmount(recharges)
+  
+  transactions = listWithFormatedDate(transactions)
+  recharges = listWithFormatedDate(recharges)
+
+  return {
+    balance: totalRecharges - totalTransactions,
+    transactions, 
+    recharges
+  }
 }
 
 function formatName(name: string) {
@@ -91,16 +119,23 @@ function formatName(name: string) {
   return cardName.toUpperCase()
 }
 
-export async function updateCardStatus(id: number, password: string, blockCard: boolean){
-  const card = await cardRepository.findById(id)
+function getTotalAmount(list: any) {
+  const totalAmount: number = list.reduce((sum: number, item: any) => 
+    sum + item.amount, 0
+  )
+  return totalAmount
+}
 
-  cardVerification.unregisteredCard(card)
-  cardVerification.expiredCard(card)
-  cardVerification.checkPassword(card, password)
-  
-  if(blockCard)
-    cardVerification.blockedCard(card)
-  else cardVerification.unblockedCard(card)
+function listWithFormatedDate(list: any){
+  const formatedList = list.map((item: any) => {
+    let date = dayjs(item.timestamp).format("DD/MM/YY")
+    
+    delete item.timestamp
+    return {
+      ...item,
+      timestamp: date
+    }
+  })
 
-  await cardRepository.update(id, blockCard ? {isBlocked: true} : {isBlocked: false})
+  return formatedList
 }

@@ -19,16 +19,6 @@ export async function activateCard(req: Request, res: Response){
   res.sendStatus(200)
 }
 
-export async function rechargeCard(req: Request, res: Response) {
-  const { id } = req.params
-
-  const { amount } = req.body
-
-  await cardService.rechargeCard(Number(id), amount)
-
-  res.sendStatus(200)
-}
-
 export async function updateCardStatus(req: Request, res: Response){
   const { id } = req.params
   const { password } = req.body
@@ -40,4 +30,12 @@ export async function updateCardStatus(req: Request, res: Response){
   await cardService.updateCardStatus(Number(id), password, blockCard)
 
   res.sendStatus(200)
+}
+
+export async function getBalance(req: Request, res: Response) {
+  const { id } = req.params
+
+  const metrics = await cardService.getBalance(Number(id))
+
+  res.send(metrics)
 }

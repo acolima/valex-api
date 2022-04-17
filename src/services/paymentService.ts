@@ -1,9 +1,10 @@
 import * as businessRepository from "../repositories/businessRepository.js"
 import * as cardRepository from "../repositories/cardRepository.js"
 import * as paymentRepository from "../repositories/paymentRepository.js"
-import * as balanceService from "../services/balanceService.js"
 import * as cardVerification from "../utils/cardVerificationUtils.js"
 import * as error from "../utils/errorUtils.js"
+
+import { getBalance } from "./cardService.js"
 
 export async function newPayment(
   cardId: number, password: string, businessId: number, amount: number
@@ -23,7 +24,7 @@ export async function newPayment(
   if(card.type !== establishment.type)
     throw error.differentCardType()
 
-  const { balance } = await balanceService.getBalance(cardId)
+  const { balance } = await getBalance(cardId)
   if(balance <= amount) throw error.insuficientBalance()
 
   await paymentRepository.insert({cardId, businessId, amount})
