@@ -35,5 +35,9 @@ cardRouter.put(
   "/cards/:id/unblock",
   cardController.updateCardStatus
 )
-
+cardRouter.delete(
+  "/cards/:id/deleteCard",
+  schemaValidation(cardSchemas.deleteVirtualCard),
+  cardController.deleteVirtualCard
+)
 export default cardRouter

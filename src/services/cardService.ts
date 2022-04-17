@@ -98,6 +98,16 @@ export async function createVirtualCard(cardId: number, password: string) {
   return {newCard}
 }
 
+export async function deleteVirtualCard(cardId: number, password: string) {
+  const card = await cardRepository.findById(cardId)
+  
+  cardVerification.unregisteredCard(card)
+  cardVerification.checkVirtualCard(card)
+  cardVerification.checkPassword(card, password)
+  
+  await cardRepository.remove(cardId)
+}
+
 export async function activateCard(id: number, securityCode: string, password: string) {
   const card = await cardRepository.findById(id)
 

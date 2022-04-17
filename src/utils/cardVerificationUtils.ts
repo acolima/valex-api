@@ -37,3 +37,8 @@ export function checkSecurityCode(card: Card, securityCode: string){
   if(!bcrypt.compareSync(securityCode, card.securityCode))
   throw error.invalidSecurityCode()
 }
+
+export function checkVirtualCard(card: Card) {
+  if(!card.isVirtual) throw error.notVirtualCard()
+
+}

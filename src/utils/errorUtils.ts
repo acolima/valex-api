@@ -57,3 +57,7 @@ export function blockedCard() {
 export function unblockedCard() {
   return { statusCode: 401, message: "This card is not blocked" }
 }
+
+export function notVirtualCard() {
+  return { statusCode: 401, message: "Only virtual cards can be deleted" }
+}

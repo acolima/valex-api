@@ -20,3 +20,7 @@ export const createVirtualCard = joi.object({
   cardId: joi.number().required(),
   password: joi.string().length(4).regex(/^[0-9]{4}$/).required()
 })
+
+export const deleteVirtualCard = joi.object({
+  password: joi.string().length(4).regex(/^[0-9]{4}$/).required()
+})
