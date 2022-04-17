@@ -102,19 +102,20 @@ export async function deleteVirtualCard(cardId: number, password: string) {
   const card = await cardRepository.findById(cardId)
   
   cardVerification.unregisteredCard(card)
-  cardVerification.checkVirtualCard(card)
+  cardVerification.isVirtualCard(card)
   cardVerification.checkPassword(card, password)
   
   await cardRepository.remove(cardId)
 }
 
 export async function activateCard(id: number, securityCode: string, password: string) {
+  const message = "Virtual cards don't need to be activated"
   const card = await cardRepository.findById(id)
 
   cardVerification.unregisteredCard(card)
   cardVerification.expiredCard(card)
+  cardVerification.isNotVirtualCard(card, message)
   cardVerification.activatedCard(card)
-
   cardVerification.checkSecurityCode(card, securityCode)
   
   password = bcrypt.hashSync(password, 10)
@@ -140,6 +141,8 @@ export async function getBalance(cardId: number) {
   const card = await cardRepository.findById(cardId)
   cardVerification.unregisteredCard(card)
   cardVerification.deactivatedCard(card)
+
+  if(card.isVirtual) cardId = await getOriginalCardId(card.originalCardId)
 
   let transactions = await paymentRepository.findByCardId(cardId)
   let recharges = await rechargeRepository.findByCardId(cardId)
@@ -189,4 +192,9 @@ function listWithFormatedDate(list: any){
   })
 
   return formatedList
+}
+
+export async function getOriginalCardId(cardId: number) {
+  const {id : originalCardId} = await cardRepository.findById(cardId)
+  return originalCardId
 }

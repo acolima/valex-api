@@ -35,10 +35,15 @@ export function checkPassword(card: Card, password: string) {
 
 export function checkSecurityCode(card: Card, securityCode: string){
   if(!bcrypt.compareSync(securityCode, card.securityCode))
-  throw error.invalidSecurityCode()
+    throw error.invalidSecurityCode()
 }
 
-export function checkVirtualCard(card: Card) {
-  if(!card.isVirtual) throw error.notVirtualCard()
+export function isVirtualCard(card: Card) {
+  if(!card.isVirtual) 
+    throw error.notVirtualCard("Only virtual cards can be deleted")
+}
 
+export function isNotVirtualCard(card: Card, message: string) {
+  if(card.isVirtual) 
+    throw error.notVirtualCard(message)
 }

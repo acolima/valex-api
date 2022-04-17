@@ -4,7 +4,7 @@ import * as paymentRepository from "../repositories/paymentRepository.js"
 import * as cardVerification from "../utils/cardVerificationUtils.js"
 import * as error from "../utils/errorUtils.js"
 
-import { getBalance } from "./cardService.js"
+import { getBalance, getOriginalCardId } from "./cardService.js"
 import { Card } from "../repositories/cardRepository.js"
 
 export async function newPayment(
@@ -28,12 +28,16 @@ export async function newOnlinePayment(
   const card = await cardRepository
     .findByCardDetails(cardNumber, cardHolderName, expirationDate)
   cardVerifications(card, null, securityCode)
+  
+  let cardId = card.id
+
+  if(card.isVirtual) cardId = await getOriginalCardId(card.originalCardId)
 
   await establishmentVerification(establishmentId, card)
 
   await checkBalance(card.id, amount)
 
-  await paymentRepository.insert({cardId: card.id, businessId: establishmentId, amount})
+  await paymentRepository.insert({cardId, businessId: establishmentId, amount})
 }
 
 function cardVerifications(card: Card, password: string, securityCode: string){
@@ -42,8 +46,11 @@ function cardVerifications(card: Card, password: string, securityCode: string){
   cardVerification.deactivatedCard(card)
   cardVerification.blockedCard(card)
 
-  password ?
-    cardVerification.checkPassword(card, password) :
+  if(password){
+    cardVerification.checkPassword(card, password)
+    cardVerification.isNotVirtualCard(card, "Virtual cards aren't accepted in POS")
+  }
+  else 
     cardVerification.checkSecurityCode(card, securityCode)
 }
 
