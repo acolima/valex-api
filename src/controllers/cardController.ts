@@ -1,7 +1,16 @@
 import { Request, Response } from "express"
 import * as cardService from "../services/cardService.js"
+import * as companyService from "../services/companyService.js"
+import * as error from "../utils/errorUtils.js"
 
 export async function createCard(req: Request, res: Response){
+  const key = req.headers['x-api-key']
+  const apiKey = key as string
+  
+  if(!apiKey) throw error.unauthorized("Invalid API key")
+
+  const company = await companyService.findCompany(apiKey)
+
   const { employeeId, type } = req.body
   
   const card = await cardService.createCard(employeeId, type)

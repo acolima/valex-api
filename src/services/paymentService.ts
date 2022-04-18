@@ -2,7 +2,7 @@ import * as businessRepository from "../repositories/businessRepository.js"
 import * as cardRepository from "../repositories/cardRepository.js"
 import * as paymentRepository from "../repositories/paymentRepository.js"
 import * as cardVerification from "../utils/cardVerificationUtils.js"
-import * as error from "../utils/errorUtils.js"
+import * as establishmentVerification from "../utils/establishmentVerificationUtils.js"
 
 import { getBalance, getOriginalCardId } from "./cardService.js"
 import { Card } from "../repositories/cardRepository.js"
@@ -13,7 +13,7 @@ export async function newPayment(
   const card = await cardRepository.findById(cardId)
   cardVerifications(card, password, null)
 
-  await establishmentVerification(establishmentId, card)
+  await establishmentVerifications(establishmentId, card)
 
   await checkBalance(cardId, amount)
 
@@ -33,7 +33,7 @@ export async function newOnlinePayment(
 
   if(card.isVirtual) cardId = await getOriginalCardId(card.originalCardId)
 
-  await establishmentVerification(establishmentId, card)
+  await establishmentVerifications(establishmentId, card)
 
   await checkBalance(card.id, amount)
 
@@ -54,16 +54,16 @@ function cardVerifications(card: Card, password: string, securityCode: string){
     cardVerification.checkSecurityCode(card, securityCode)
 }
 
-async function establishmentVerification(establishmentId: number, card: Card){
+async function establishmentVerifications(establishmentId: number, card: Card){
   const establishment = await businessRepository.findById(establishmentId)
 
-  if(!establishment) throw error.unregisteredEstablishment()
+  establishmentVerification.unregisteredEstablishment(establishment)
 
-  if(card.type !== establishment.type)
-    throw error.differentCardType()
+  establishmentVerification.differentCardType(card.type, establishment.type)
 }
 
 async function checkBalance(cardId: number, amount: number) {
   const { balance } = await getBalance(cardId)
-  if(balance <= amount) throw error.insuficientBalance()
+  
+  cardVerification.insuficientBalance(balance, amount)
 }

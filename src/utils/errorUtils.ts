@@ -1,63 +1,15 @@
-export function invalidKey() {
-  return { statusCode: 401, message: "Invalid API key" }
-}
-
-export function unregisteredEmployee(){
-  return { statusCode: 404, message: "Employee not registered" }
-}
-
-export function cardNumberInUse(){
-  return { statusCode: 409, message: "This number is already in use" }
-}
-
-export function duplicatedCardType(type: string){
-  return { statusCode: 409, message: `This user already has a ${type} card` }
-}
-
-export function unregisteredCard(){
-  return { statusCode: 404, message: "Card not registered" }
-}
-
-export function expiredCard(){
-  return { statusCode: 401, message: "Expired card" }
-}
-
-export function activatedCard(){
-  return { statusCode: 401, message: "Card is already active" }
-}
-
-export function deactivatedCard(){
-  return { statusCode: 401, message: "Card is not active" }
-}
-
-export function invalidSecurityCode(){
-  return { statusCode: 401, message: "Invalid security code" }
-}
-
-export function incorrectPassword(){
-  return { statusCode: 401, message: "Password is incorrect" }
-}
-
-export function unregisteredEstablishment(){
-  return { statusCode: 401, message: "Establishment is not registered" }
-}
-
-export function differentCardType(){
-  return { statusCode: 401, message: "Different card type" }
-}
-
-export function insuficientBalance(){
-  return { statusCode: 401, message: "Insuficient balance" }
-}
-
-export function blockedCard() {
-  return { statusCode: 401, message: "This card is blocked" }
-}
-
-export function unblockedCard() {
-  return { statusCode: 401, message: "This card is not blocked" }
-}
-
-export function notVirtualCard(message: string) {
+export function unauthorized(message: string) {
   return { statusCode: 401, message }
+}
+
+export function notFound(message: string) {
+  return { statusCode: 404, message }
+}
+
+export function conflict(message: string) {
+  return { statusCode: 409, message }
+}
+
+export function unprocessableEntity(message: string) {
+  return { statusCode: 422, message}
 }

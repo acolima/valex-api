@@ -2,8 +2,8 @@ import * as employeeRepository from "../repositories/employeeRepository.js"
 import * as cardRepository from "../repositories/cardRepository.js"
 import * as paymentRepository from "../repositories/paymentRepository.js"
 import * as rechargeRepository from "../repositories/rechargeRepository.js"
-import * as error from "../utils/errorUtils.js"
 import * as cardVerification from "../utils/cardVerificationUtils.js"
+import * as employeeVerification from "../utils/employeeVerificationUtils.js"
 
 import { TransactionTypes } from "../repositories/cardRepository.js"
 import { faker } from "@faker-js/faker"
@@ -12,25 +12,17 @@ import bcrypt from "bcrypt"
 
 export async function createCard(employeeId: number, cardType: string){
   const employee = await employeeRepository.findById(employeeId)
-  if(!employee) throw error.unregisteredEmployee()
+  employeeVerification.unregisteredEmployee(employee)
 
   const type = cardType as TransactionTypes
   const duplicatedCardType = 
     await cardRepository.findByTypeAndEmployeeId(type, employeeId)
-  if(duplicatedCardType) throw error.duplicatedCardType(type)
-
-  const number = faker.finance.creditCardNumber('mastercard')
+  cardVerification.duplicatedCardType(duplicatedCardType, type)
   
-  const card = await cardRepository.findByNumber(number)
-  if(card) throw error.cardNumberInUse()
-
   const cardholderName = formatName(employee.fullName)
-  const expirationDate = dayjs().add(5, 'year').format("MM/YY")
-
-  let securityCode = faker.finance.creditCardCVV()
-  const cvv = securityCode
-  securityCode = bcrypt.hashSync(securityCode, 10)
-
+  
+  const { number, expirationDate, securityCode, cvv } = await generateCardInfo()
+  
   const cardData = {
     employeeId,
     number,
@@ -62,16 +54,7 @@ export async function createVirtualCard(cardId: number, password: string) {
   cardVerification.unregisteredCard(card)
   cardVerification.checkPassword(card, password)  
 
-  const number = faker.finance.creditCardNumber('mastercard')
-  
-  const cardNumber = await cardRepository.findByNumber(number)
-  if(cardNumber) throw error.cardNumberInUse()
-
-  const expirationDate = dayjs().add(5, 'year').format("MM/YY")
-
-  let securityCode = faker.finance.creditCardCVV()
-  const cvv = securityCode
-  securityCode = bcrypt.hashSync(securityCode, 10)
+  const { number, expirationDate, securityCode, cvv } = await generateCardInfo()
 
   const cardData = {
     employeeId: card.employeeId,
@@ -120,7 +103,7 @@ export async function activateCard(id: number, securityCode: string, password: s
   
   password = bcrypt.hashSync(password, 10)
 
-  await cardRepository.update(id, {...card, password})
+  await cardRepository.update(id, {password})
 }
 
 export async function updateCardStatus(id: number, password: string, blockCard: boolean){
@@ -197,4 +180,20 @@ function listWithFormatedDate(list: any){
 export async function getOriginalCardId(cardId: number) {
   const {id : originalCardId} = await cardRepository.findById(cardId)
   return originalCardId
+}
+
+async function generateCardInfo() {
+  const number = faker.finance.creditCardNumber('mastercard')
+  
+  const card = await cardRepository.findByNumber(number)
+  cardVerification.cardNumberInUse(card)
+
+  const expirationDate = dayjs().add(5, 'year').format("MM/YY")
+
+  let securityCode = faker.finance.creditCardCVV()
+  const cvv = securityCode
+  securityCode = bcrypt.hashSync(securityCode, 10)
+  
+  
+  return {number, expirationDate, securityCode, cvv}
 }
